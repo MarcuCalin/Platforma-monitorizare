@@ -28,7 +28,8 @@ while true; do
         ps -eo pid,comm,%cpu,%mem --sort=-%cpu | head -n 6
         echo
         echo "--- DISK USAGE ---"
-        df -h --total | grep total | awk '{printf "Disk Usage     : %s/%s (%s)\n", $3, $2, $5}'
+         df -h | awk 'NR==1{printf "%-20s %-10s %-10s %-8s %-10s\n", $1,$2,$3,$5,$6}
+                      NR>1{printf "%-20s %-10s %-10s %-8s %-10s\n", $1,$2,$3,$5,$6}'
         echo
         echo "--- NETWORK ---"
         ip -4 addr show | grep inet | awk '{print "IP Address    : "$2 " (" $NF ")"}'
