@@ -1,30 +1,30 @@
 ===================== SYSTEM STATE =====================
-Timestamp      : 2025-09-28 09:33:45
+Timestamp      : 2025-09-28 09:33:26
 Hostname       : Ubuntu2204
 Uptime         : up 15 minutes
-Load Average   :  1.16, 1.69, 1.35
+Load Average   :  1.52, 1.79, 1.38
 
 --- CPU ---
-CPU Usage     : 18.26%
+CPU Usage     : 12.78%
 
 --- MEMORY ---
-Used/Total    : 2.3Gi/5.3Gi (43.40%)
+Used/Total    : 2.5Gi/5.3Gi (47.17%)
 
 --- PROCESSES ---
 Total processes: 266
 Top 5 CPU consuming processes:
     PID COMMAND         %CPU %MEM
-  18207 code            39.4  5.2
-  18457 code            38.1  6.0
-   1907 java            24.0 10.9
-  18169 code            13.3  2.7
-  18244 code            12.7  3.8
+  18457 code            42.9  8.7
+  18207 code            41.4  5.1
+   1907 java            24.5 10.9
+  18244 code            14.2  3.8
+  18169 code            13.1  2.6
 
 --- DISK USAGE ---
 Filesystem           Size       Used       Use%     Mounted   
 tmpfs                547M       1.7M       1%       /run      
 /dev/sda3            24G        22G        93%      /         
-tmpfs                2.7G       32M        2%       /dev/shm  
+tmpfs                2.7G       29M        2%       /dev/shm  
 tmpfs                5.0M       4.0K       1%       /run/lock 
 /dev/sda2            512M       6.1M       2%       /boot/efi 
 shared-with-host     953G       394G       42%      /home/eu/shared-with-host
