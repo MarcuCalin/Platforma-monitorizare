@@ -1,4 +1,4 @@
-1.Monitoring (Shell Script)
+# 1.Monitoring (Shell Script)
 
 Scriptul monitoring.sh:
 
@@ -41,16 +41,8 @@ shared-with-host     953G       394G       42%      /home/eu/shared-with-host
 tmpfs                547M       112K       1%       /run/user/1000
 /dev/sr0             59M        59M        100%     /media/eu/VBox_GAs_7.1.8
 
---- NETWORK ---
-IP Address    : 127.0.0.1/8 (lo)
-IP Address    : 10.0.2.15/24 (enp0s3)
-IP Address    : 192.168.1.133/24 (enp0s8)
-IP Address    : 192.168.49.1/24 (br-046171c048bb)
-IP Address    : 172.18.0.1/16 (br-1f32ccedd969)
-IP Address    : 172.17.0.1/16 (docker0)
-========================================================
 
-2. Backup (Python Script)
+# 2. Backup (Python Script)
 
 Scriptul backup_script.py:
 
