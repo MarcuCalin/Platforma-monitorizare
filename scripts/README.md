@@ -65,3 +65,5 @@ Intervalul este configurabil cu variabila de mediu BACKUP_INTERVAL (default 5 se
 Directorul backup-urilor este configurabil cu variabila BACKUP_DIR (default backup).
 
 Exemplu fișier backup:
+
+system-state_20250928_093348.log
