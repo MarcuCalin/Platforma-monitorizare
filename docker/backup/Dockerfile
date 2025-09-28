@@ -1,1 +1,8 @@
 # Dockerfile pentru imaginea scriptului de backup Python.
+# Dockerfile.backup
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY backup.py /app/backup.py
+
+CMD ["python", "/app/backup.py"]
