@@ -12,6 +12,26 @@ Imagine de bază: python:3.11-slim
 
 Rulează backup_script.py
 
+# Build manual pentru fiecare imagine :
+
+# Construim imaginea pentru monitor
+docker build -t system-monitor -f Dockerfile.monitor .
+
+# Construim imaginea pentru backup
+docker build -t system-backup -f Dockerfile.backup .
+
+Creeam un volum comun: 
+docker volume create system_logs
+
+Rulam containerul monitor:
+
+docker run -d --name monitor -e MONITOR_INTERVAL=5 -v system_logs:/data system-monitor
+
+Rulam containerul backup
+
+docker run -d --name backup -e BACKUP_INTERVAL=5 -e BACKUP_DIR=/backup -v system_logs:/data -v /backups:/backup system-backup
+
+
 # Docker Compose
 
 Fișierul docker-compose.yml:
