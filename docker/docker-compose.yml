@@ -5,7 +5,7 @@ services:
   monitor:
     build:
       context: .
-      dockerfile: Dockerfile.monitor
+      dockerfile: Dockerfile.monitoring
     container_name: monitor
     environment:
       - MONITOR_INTERVAL=5

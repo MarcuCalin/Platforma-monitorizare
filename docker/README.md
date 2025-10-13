@@ -6,18 +6,18 @@ Instalează sysstat și procps
 
 Rulează system_monitor.sh
 
-# Backup Dockerfile
+## Backup Dockerfile
 
 Imagine de bază: python:3.11-slim
 
 Rulează backup_script.py
 
-# Build manual pentru fiecare imagine :
+## Build manual pentru fiecare imagine :
 
-# Construim imaginea pentru monitor
-docker build -t system-monitor -f Dockerfile.monitor .
+### Construim imaginea pentru monitor
+docker build -t system-monitor -f Dockerfile.monitoring .
 
-# Construim imaginea pentru backup
+### Construim imaginea pentru backup
 docker build -t system-backup -f Dockerfile.backup .
 
 Creeam un volum comun: 
@@ -32,7 +32,7 @@ Rulam containerul backup
 docker run -d --name backup -e BACKUP_INTERVAL=5 -e BACKUP_DIR=/backup -v system_logs:/data -v /backups:/backup system-backup
 
 
-# Docker Compose
+## Docker Compose
 
 Fișierul docker-compose.yml:
 
@@ -51,9 +51,10 @@ docker logs backup
 4. Verifică fișierul monitoring.sh - docker exec -it monitor cat /system-state.log
 5. Verifică backup-urile - docker exec -it backup ls /backup
 
-Variabile de mediu:
+## Variabile de mediu
 
-Serviciu	Variabilă	      Default	      Descriere
-monitor	  MONITOR_INTERVAL	5	Interval  în secunde pentru colectare date sistem
-backup	  BACKUP_INTERVAL	  5	Interval  în secunde pentru verificare și backup
-backup	  BACKUP_DIR	      backup	    Directorul unde sunt stocate fișierele de backup
+| Serviciu | Variabilă        | Default | Descriere                                   |
+|----------|------------------|---------|---------------------------------------------|
+| monitor  | MONITOR_INTERVAL | 5       | Interval în secunde pentru colectare date sistem |
+| backup   | BACKUP_INTERVAL  | 5       | Interval în secunde pentru verificare și backup |
+| backup   | BACKUP_DIR       | backup  | Directorul unde sunt stocate fișierele de backup |
