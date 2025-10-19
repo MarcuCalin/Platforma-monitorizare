@@ -3,8 +3,8 @@ version: "3.9"
 services:
   monitor:
     build:
-      context: .
-      dockerfile: Dockerfile.monitoring
+      context: ..
+      dockerfile: docker/Dockerfile.monitoring
     container_name: monitor
     environment:
       - MONITOR_INTERVAL=5
@@ -13,8 +13,8 @@ services:
 
   backup:   
     build:
-      context: .
-      dockerfile: Dockerfile.backup
+      context: ..
+      dockerfile: docker/Dockerfile.backup
     container_name: backup
     environment:
       - BACKUP_INTERVAL=5

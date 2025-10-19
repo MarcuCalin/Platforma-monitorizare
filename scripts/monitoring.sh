@@ -32,7 +32,7 @@ while true; do
                       NR>1{printf "%-20s %-10s %-10s %-8s %-10s\n", $1,$2,$3,$5,$6}'
         echo
         echo "--- NETWORK ---"
-        ip -4 addr show | grep inet | awk '{print "IP Address    : "$2 " (" $NF ")"}'
+        hostname -I | awk '{print "IP Address    : "$1}'
         echo "========================================================"
     } > "$LOGFILE"
 
