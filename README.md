@@ -20,6 +20,46 @@ git push -u origin main
 - [Descriere detaliata a scopului proiectului. ]
 
 ### Arhitectura proiectului
+
+├── ansible
+│   ├── inventory.ini
+│   └── playbooks
+│       ├── deploy_platform.yml
+│       └── install_docker.yml
+├── docker
+│   ├── docker-compose.yml
+│   ├── Dockerfile.backup
+│   └── Dockerfile.monitoring
+├── imagini
+│   └── jenkins-logo.png
+├── jenkins
+│   └── pipelines
+│       ├── backup
+│       │   └── Jenkinsfile
+│       └── monitoring
+│           └── Jenkinsfile
+├── k8s
+│   ├── deployment.yaml
+│   └── hpa.yaml
+├── README.md
+├── scripts
+│   ├── backup
+│   │   ├── system-state_20250928_093258.log
+│   │   ├── system-state_20250928_093328.log
+│   │   ├── system-state_20250928_093333.log
+│   │   ├── system-state_20250928_093338.log
+│   │   ├── system-state_20250928_093343.log
+│   │   ├── system-state_20250928_093348.log
+│   │   ├── system-state_20251018_170505.log
+│   │   ├── system-state_20251019_110244.log
+│   │   └── system-state_20251019_112402.log
+│   ├── backup.py
+│   ├── monitoring.sh
+│   └── system-state.log
+└── terraform
+    ├── backend.tf
+    └── main.tf
+
 Acest subpunct este BONUS.
 - [Desenati in excalidraw sau in orice tool doriti arhitectura generala a proiectului si includeti aici poza cu descrierea pasilor]
 
