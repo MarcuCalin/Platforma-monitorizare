@@ -31,8 +31,59 @@ Consultati si [Sintaxa Markdown](https://www.markdownguide.org/cheat-sheet/)
 
 ## Structura Proiectului
 [Aici descriem rolul fiecarui director al proiectului. Descrierea trebuie sa fie foarte pe scurt la acest pas. O sa intrati in detalii la pasii urmatori.]
-- `/scripts`: [Puneti aici ce rol are directorul de scripturi si ce face fiecare script]
-- `/docker`: [Descriere Dockerfiles și docker-compose.yml. Aici descrieti legatura dintre fiecare Dockerfile si scripturile de mai sus (vedeti comentariul din fiecare Dockerfile)]
+## Directorul `/scripts`
+
+Directorul **`scripts`** conține toate scripturile necesare pentru monitorizarea sistemului și realizarea backup-urilor logurilor generate.
+
+- **`monitoring.sh`**  
+  Script Bash care monitorizează resursele sistemului:
+  - CPU, memorie, disk, rețea, uptime, număr de procese etc.
+  - Generează periodic fișierul `system-state.log`.
+  - Intervalul de actualizare este configurabil prin variabila de mediu `INTERVAL`.
+
+- **`backup.py`**  
+  Script Python care realizează backup automat al fișierului `system-state.log`:
+  - Creează backup doar dacă fișierul s-a modificat.
+  - Salvează fișierele cu timestamp în directorul specificat prin `BACKUP_DIR`.
+  - Intervalul de verificare se configurează prin `BACKUP_INTERVAL`.
+
+- **`system-state.log`**  
+  Fișierul generat de `monitoring.sh` care conține informații detaliate despre starea sistemului.
+
+**Rol general:**  
+Directorul `scripts` centralizează logica aplicației, oferind fișiere independente care pot fi testate local sau containerizate ulterior.
+
+---
+
+## Directorul `/docker`
+
+Directorul **`docker`** conține fișierele necesare pentru containerizarea scripturilor și orchestrarea lor cu Docker Compose.
+
+- **`Dockerfile.monitoring`**  
+  Definește imaginea Docker pentru scriptul de monitorizare Bash:
+  - Pornește de la Debian Bookworm.
+  - Instalează pachetele necesare (`sysstat`, `procps`) pentru colectarea informațiilor de sistem.
+  - Copiază scriptul `monitoring.sh` din `/scripts` în container și îl face executabil.
+  - CMD-ul pornește automat scriptul la rularea containerului.
+
+- **`Dockerfile.backup`**  
+  Definește imaginea Docker pentru scriptul Python de backup:
+  - Pornește de la `python:3.11-slim`.
+  - Copiază `backup.py` din `/scripts` în container.
+  - CMD-ul pornește scriptul automat la rularea containerului.
+
+- **`docker-compose.yml`**  
+  Orchestrarea ambelor containere, configurând:
+  - Serviciile `monitor` și `backup`.
+  - Volume pentru persistarea fișierului `system-state.log` și a backup-urilor.
+  - Variabile de mediu pentru intervale și directoare.
+  - Rețea implicită pentru comunicarea între containere (backup poate accesa fișierul generat de monitor).
+
+**Legătura dintre Dockerfile-uri și scripturi:**  
+Fiecare Dockerfile pornește un script din `/scripts` și configurează mediul necesar pentru ca acesta să funcționeze independent în container. Docker Compose conectează containerele între ele prin volume, astfel încât:
+- `monitor` scrie log-ul într-un volum partajat.
+- `backup` citește log-ul și generează backup-uri automat.
+
 - `/ansible`: [Descriere rolurilor playbook-urilor și inventory]
 - `/jenkins`: [Descrierea rolului acestui director si a subdirectoarelor. Unde sunt folosite fisierele din acest subdirector.]
 - `/terraform`: [Descriere rol fiecare fisier Terraform folosit]
