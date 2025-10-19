@@ -20,7 +20,7 @@ git push -u origin main
 - [Descriere detaliata a scopului proiectului. ]
 
 ### Arhitectura proiectului
-
+```.
 ├── ansible
 │   ├── inventory.ini
 │   └── playbooks
@@ -59,7 +59,7 @@ git push -u origin main
 └── terraform
     ├── backend.tf
     └── main.tf
-
+```.
 Acest subpunct este BONUS.
 - [Desenati in excalidraw sau in orice tool doriti arhitectura generala a proiectului si includeti aici poza cu descrierea pasilor]
 
