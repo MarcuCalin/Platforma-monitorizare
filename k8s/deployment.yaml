@@ -1,1 +1,52 @@
-# Puneti aici tot ce aveti nevoie pentru deployment (Namespace, pods, volumes, etc)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: system-monitoring
+  namespace: monitoring
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: monitoring
+  template:
+    metadata:
+      labels:
+        app: monitoring
+    spec:
+      containers:
+        - name: monitor
+          image: system-monitor:latest
+          imagePullPolicy: Never
+          env:
+            - name: MONITOR_INTERVAL
+              value: "5"
+          volumeMounts:
+            - name: logdata
+              mountPath: /data
+
+        - name: backup
+          image: system-backup:latest
+          imagePullPolicy: Never
+          env:
+            - name: BACKUP_INTERVAL
+              value: "5"
+            - name: BACKUP_DIR
+              value: "/backup"
+          volumeMounts:
+            - name: logdata
+              mountPath: /data
+            - name: backups
+              mountPath: /backup
+
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: logdata
+              mountPath: /usr/share/nginx/html/logs
+      volumes:
+        - name: logdata
+          emptyDir: {}
+        - name: backups
+          emptyDir: {}
