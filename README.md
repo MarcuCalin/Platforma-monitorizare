@@ -1,20 +1,20 @@
-# Platforma de Monitorizare a Starii unui Sistem
+# 🧠 Platforma de Monitorizare a Stării unui Sistem
 
-## Scopul Proiectului
-Acest proiect demonstrează o soluție completă DevOps ce include:
-- Monitorizarea sistemului prin scripturi automate;
-- Backup periodic al logurilor;
-- Containere Docker pentru monitorizare și backup;
-- Orchestrare cu `docker-compose` și Kubernetes (`minikube`);
-- Automatizare a instalării și rulării prin Ansible.
+## 🎯 Scopul Proiectului
+Acest proiect demonstrează o soluție completă DevOps care integrează:
 
+- 🔍 Monitorizarea sistemului prin scripturi automate;
+- 💾 Backup periodic al logurilor;
+- 🐳 Containerizare cu **Docker** și orchestrare cu **Docker Compose**;
+- ☸️ Rulare în **Kubernetes** folosind **Minikube**;
+- ⚙️ Automatizare completă cu **Ansible**.
 
-### Arhitectura proiectului
+---
 
-# 📘 Proiect: Platformă de Monitorizare și Backup
+## 🏗️ Arhitectura Proiectului
 
-## 🗂 Structura Generală a Proiectului
-```.
+### 📘 Structura Generală
+
 📂 proiect-monitoring
 ├── /scripts
 │ ├── system_monitor.sh # Script Shell care monitorizează sistemul și generează system-state.log
@@ -33,7 +33,6 @@ Acest proiect demonstrează o soluție completă DevOps ce include:
 └── /ansible
 ├── install_docker.yml # Instalează Docker pe mașina nouă
 └── run_compose.yml # Rulează docker-compose.yml pe mașina nouă
-```.
 
 ## Directorul `/scripts`
 
