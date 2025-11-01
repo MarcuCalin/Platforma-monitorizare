@@ -1,1 +1,55 @@
 # Pipeline Jenkins pentru CI/CD al scriptului Python.
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "system-monitor"
+        DOCKERHUB_USER = "marcu001"
+        DOCKERHUB_CREDENTIALS = "dockerhub-credentials"
+        IMAGE_NAME = "${DOCKERHUB_USER}/${APP_NAME}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/MarcuCalin/Platforma-monitorizare.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Construim imaginea Docker pentru monitoring...'
+                sh 'docker build -t ${IMAGE_NAME}:latest -f ../../docker/Dockerfile.monitoring .'
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                        echo "$PASS" | docker login -u "$USER" --password-stdin
+                        docker push ${IMAGE_NAME}:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploy cu Ansible...'
+                sh '''
+                ansible-playbook -i ansible/inventory.ini ansible/playbooks/deploy_platform.yml
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deploy reușit!'
+        }
+        failure {
+            echo 'Deploy eșuat!'
+        }
+    }
+}

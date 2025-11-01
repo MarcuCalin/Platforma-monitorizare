@@ -1,1 +1,22 @@
 # Playbook Ansible pentru rularea platformei Docker folosind docker-compose.
+- name: Run docker-compose on remote machine
+  hosts: monitoring_server
+  become: yes
+  tasks:
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Copy docker-compose.yml
+      copy:
+        src: ../../docker/docker-compose.yml
+        dest: /home/ansible_user/docker-compose.yml
+        owner: ansible_user
+        mode: '0644'
+
+    - name: Run docker-compose up
+      command: docker-compose -f /home/ansible_user/docker-compose.yml up -d
+      args:
+        chdir: /home/ansible_user
+

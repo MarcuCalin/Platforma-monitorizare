@@ -1,1 +1,70 @@
 # Pipeline Jenkins pentru CI/CD al scriptului python de backup.
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "system-backup"
+        DOCKERHUB_USER = "marcu001"
+        DOCKERHUB_CREDENTIALS = "dockerhub-credentials"  // ID-ul setat în Jenkins Credentials
+        IMAGE_NAME = "${DOCKERHUB_USER}/${APP_NAME}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/MarcuCalin/Platforma-monitorizare.git'
+            }
+        }
+
+        stage('Syntax Check') {
+            steps {
+                echo 'Verificare sintaxă Python...'
+                sh 'python3 -m py_compile ../../scripts/backup.py'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                echo 'Rulare teste (dummy example)...'
+                sh '''
+                echo "import unittest; print('No tests yet')" > test_backup.py
+                python3 test_backup.py
+                '''
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Construim imaginea Docker...'
+                sh 'docker build -t ${IMAGE_NAME}:latest -f ../../docker/Dockerfile.backup .'
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                        echo "$PASS" | docker login -u "$USER" --password-stdin
+                        docker push ${IMAGE_NAME}:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                echo 'Curățăm imaginile locale...'
+                sh 'docker rmi ${IMAGE_NAME}:latest || true'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline terminat cu succes!'
+        }
+        failure {
+            echo ' Pipeline eșuat!'
+        }
+    }
+}
