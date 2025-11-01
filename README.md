@@ -14,7 +14,7 @@ Acest proiect demonstrează o soluție completă DevOps care integrează:
 ## 🏗️ Arhitectura Proiectului
 
 ### 📘 Structura Generală
-
+```
 📂 proiect-monitoring
 ├── /scripts
 │ ├── system_monitor.sh # Script Shell care monitorizează sistemul și generează system-state.log
@@ -33,7 +33,7 @@ Acest proiect demonstrează o soluție completă DevOps care integrează:
 └── /ansible
 ├── install_docker.yml # Instalează Docker pe mașina nouă
 └── run_compose.yml # Rulează docker-compose.yml pe mașina nouă
-
+```
 ## Directorul `/scripts`
 
 Acest director conține scripturile folosite pentru colectarea informațiilor despre sistem și realizarea backup-ului automat.
