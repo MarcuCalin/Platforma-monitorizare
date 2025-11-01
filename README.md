@@ -1,91 +1,67 @@
-**Acest schelet de proiect si acest README.MD sunt orientative.** 
-**Aveti libertatea de a aduga alte fisiere si a modifica acest schelet cum doriti. Important este sa implementati proiectul conform cerintelor primite.**
-**Acest text si tot textul ajutator de mai jos trebuiesc sterse inainte de a preda proiectul.**
-
-**Pentru a clona acest proiect creati propriul vostru proiect EMPTY in gihub si rulati:**
-```bash
-git clone git@github.com:amihai/platforma-monitorizare.git
-cd platforma-monitorizar
-git remote -v
-git remote remove origin
-git remote add origin:<USERUL_VOSTRU>/platforma-monitorizare.git
-git branch -M main
-git push -u origin main
-```
-
-
 # Platforma de Monitorizare a Starii unui Sistem
 
 ## Scopul Proiectului
-- [Descriere detaliata a scopului proiectului. ]
+Acest proiect demonstrează o soluție completă DevOps ce include:
+- Monitorizarea sistemului prin scripturi automate;
+- Backup periodic al logurilor;
+- Containere Docker pentru monitorizare și backup;
+- Orchestrare cu `docker-compose` și Kubernetes (`minikube`);
+- Automatizare a instalării și rulării prin Ansible.
+
 
 ### Arhitectura proiectului
+
+# 📘 Proiect: Platformă de Monitorizare și Backup
+
+## 🗂 Structura Generală a Proiectului
 ```.
-├── ansible
-│   ├── inventory.ini
-│   └── playbooks
-│       ├── deploy_platform.yml
-│       └── install_docker.yml
-├── docker
-│   ├── docker-compose.yml
-│   ├── Dockerfile.backup
-│   └── Dockerfile.monitoring
-├── imagini
-│   └── jenkins-logo.png
-├── jenkins
-│   └── pipelines
-│       ├── backup
-│       │   └── Jenkinsfile
-│       └── monitoring
-│           └── Jenkinsfile
-├── k8s
-│   ├── deployment.yaml
-│   └── hpa.yaml
-├── README.md
-├── scripts
-│   ├── backup
-│   │   ├── system-state_20250928_093258.log
-│   │   ├── system-state_20250928_093328.log
-│   │   ├── system-state_20250928_093333.log
-│   │   ├── system-state_20250928_093338.log
-│   │   ├── system-state_20250928_093343.log
-│   │   ├── system-state_20250928_093348.log
-│   │   ├── system-state_20251018_170505.log
-│   │   ├── system-state_20251019_110244.log
-│   │   └── system-state_20251019_112402.log
-│   ├── backup.py
-│   ├── monitoring.sh
-│   └── system-state.log
-└── terraform
-    ├── backend.tf
-    └── main.tf
+📂 proiect-monitoring
+├── /scripts
+│ ├── system_monitor.sh # Script Shell care monitorizează sistemul și generează system-state.log
+│ └── backup_script.py # Script Python care creează backup pentru loguri
+│
+├── /docker
+│ ├── Dockerfile.monitoring # Imagine Docker pentru scriptul de monitorizare
+│ ├── Dockerfile.backup # Imagine Docker pentru scriptul de backup
+│ ├── docker-compose.yml # Definește și pornește containerele monitor și backup
+│
+├── /kubernetes
+│ ├── namespace.yaml # Creează namespace-ul "monitoring"
+│ ├── deployment.yaml # Deployment cu 2 replici și 3 containere (monitor, backup, nginx)
+│ ├── hpa.yaml # Configurare HPA (Horizontal Pod Autoscaler)
+│
+└── /ansible
+├── install_docker.yml # Instalează Docker pe mașina nouă
+└── run_compose.yml # Rulează docker-compose.yml pe mașina nouă
 ```.
-Acest subpunct este BONUS.
-- [Desenati in excalidraw sau in orice tool doriti arhitectura generala a proiectului si includeti aici poza cu descrierea pasilor]
 
-- Acesta este un exemplu de inserare de imagine in README.MD. Puneti imagine in directorul de imagini si o inserati asa:
-
-![Jenkins Logo](imagini/jenkins-logo.png)
-
-Consultati si [Sintaxa Markdown](https://www.markdownguide.org/cheat-sheet/)
-
-## Structura Proiectului
-[Aici descriem rolul fiecarui director al proiectului. Descrierea trebuie sa fie foarte pe scurt la acest pas. O sa intrati in detalii la pasii urmatori.]
 ## Directorul `/scripts`
 
-Directorul **`scripts`** conține toate scripturile necesare pentru monitorizarea sistemului și realizarea backup-urilor logurilor generate.
+Acest director conține scripturile folosite pentru colectarea informațiilor despre sistem și realizarea backup-ului automat.
 
-- **`monitoring.sh`**  
-  Script Bash care monitorizează resursele sistemului:
-  - CPU, memorie, disk, rețea, uptime, număr de procese etc.
-  - Generează periodic fișierul `system-state.log`.
-  - Intervalul de actualizare este configurabil prin variabila de mediu `INTERVAL`.
+ **`monitoring.sh'**
 
-- **`backup.py`**  
-  Script Python care realizează backup automat al fișierului `system-state.log`:
-  - Creează backup doar dacă fișierul s-a modificat.
-  - Salvează fișierele cu timestamp în directorul specificat prin `BACKUP_DIR`.
-  - Intervalul de verificare se configurează prin `BACKUP_INTERVAL`.
+Monitorizează în timp real sistemul (CPU, memorie, disk, procese active, hostname etc.);
+
+Scrie rezultatele în fișierul system-state.log;
+
+Este rulat periodic printr-un container dedicat.
+
+Exemplu rulare manuală:
+
+bash scripts/monitoring.sh
+ 
+ **`backup.py '**
+
+Verifică existența fișierului system-state.log;
+
+Creează un backup într-un fișier cu timestamp;
+
+Este declanșat automat din containerul backup.
+
+Rulare manuală:
+
+python3 scripts/backup.py
 
 - **`system-state.log`**  
   Fișierul generat de `monitoring.sh` care conține informații detaliate despre starea sistemului.
@@ -128,24 +104,148 @@ Fiecare Dockerfile pornește un script din `/scripts` și configurează mediul n
 - `/jenkins`: [Descrierea rolului acestui director si a subdirectoarelor. Unde sunt folosite fisierele din acest subdirector.]
 - `/terraform`: [Descriere rol fiecare fisier Terraform folosit]
 
-## Setup și Rulare
-- [Instrucțiuni de setup local și remote. Aici trebuiesc puse absolut toate informatiile necesare pentru a putea instala si rula proiectul. De exemplu listati aici si ce tool-uri trebuiesc instalate (Ansible, SSH config, useri, masini virtuale noi daca este cazul, etc) pasii de instal si comenzi].
-- [Cand includeti instructiuni folositi blocul de code markdown cu limbajul specific codului ]
+##  Setup și Rulare
+
+Această secțiune descrie **toți pașii necesari** pentru a instala, configura și rula proiectul, atât local, cât și remote, folosind Ansible.
+
+---
+
+### 🧰 1. Tool-uri necesare
+
+Înainte de a începe, asigură-te că ai instalate următoarele:
+
+| Tool | Versiune recomandată | Scop |
+|------|----------------------|------|
+| **Docker** | ≥ 24.x | Rularea containerelor |
+| **Docker Compose** | ≥ 2.x | Orchestrarea serviciilor |
+| **Ansible** | ≥ 2.15.x | Automatizarea instalării și deploy-ului |
+| **Python** | ≥ 3.10 | Execuția scriptului de backup |
+| **Minikube** | ≥ 1.33 | Cluster Kubernetes local |
+| **kubectl** | compatibil cu Minikube | Interacțiune cu Kubernetes |
+| **OpenSSH** | latest | Conectare la VM remote |
+| **VirtualBox** *(opțional)* | pentru VM-uri locale | Testare în mediu izolat |
+
+---
+
+### 🖥️ 2. Configurare locală
+
+Clonează proiectul și intră în director:
 
 ```bash
-ls -al
-docker run my-app
-```
+git clone https://github.com/MarcuCalin/Platforma-monitorizare/
+cd monitoring-platform
 
-```python
-import time
-print("Hello World")
-time.sleep(4)
-```
 
-- [Descrieti cum ati pornit containerele si cum ati verificat ca aplicatia ruleaza corect.] 
-- [Includeti aici pasii detaliati de configurat si rulat Ansible pe masina noua]
-- [Descrieti cum verificam ca totul a rulat cu succes? Cateva comenzi prin care verificam ca Ansible a instalat ce trebuia]
+cd docker
+docker-compose up --build -d
+docker ps
+Ar trebui să vezi două containere:
+
+system-monitor
+
+system-backup
+
+Verifică logurile generate:
+
+bash
+Copy code
+docker logs system-monitor
+docker logs system-backup
+Verifică existența backup-urilor:
+
+bash
+Copy code
+ls scripts/backup/
+
+Pe masina client citim cheia publica a userului curent
+cat ~/.ssh/id_rsa.pub
+
+Pe masina remote (masina noua) adaugam un user nou si ii setam cheia de ssh
+sudo adduser ansible_user
+
+Adaugam userul ansible in userii cu drept de sudo
+sudo usermod -aG sudo ansible_user
+groups ansible_user
+
+Adaugam userul de ansible in lista de useri ce nu au nevoie de parola la sudo
+cd /etc/sudoers.d/
+echo "ansible_user ALL=(ALL) NOPASSWD:ALL" | sudo tee ansible_user-nopasswd
+# (ansible este userul pe care il foloseste Ansible sa faca ssh pe masina server)
+
+su - ansible_user
+
+Verificam ca putem face sudo fara parola
+sudo ls
+
+Adaugam cheia de ssh a userului ansible in masina remote. Atentie: trebuie sa fiti logati cu userul ansible cand rulati aceste comenzi
+
+mkdir .ssh
+touch ~/.ssh/authorized_keys
+echo “cheie ssh publica de pe masina client” >> ~/.ssh/authorized_keys
+cat ~/.ssh/authorized_keys
+
+
+
+Install ssh server pe masina remote
+sudo apt update
+sudo apt install -y openssh-server
+service ssh status
+
+Luam IP-ul masinii remote 
+ip addr | grep 192.168
+
+Revenim pe masina client (ubuntu2204) si incercam sa facem ssh cu userul ansible
+ssh ansible_user@192.168.x.xxx
+
+Configurare fișier inventory Ansible
+
+Creează sau actualizează fișierul ansible/inventory.ini:
+
+[monitoring]
+app1 ansible_host=192.168.x.xx ansible_user=ansible_user
+
+Instalare Docker pe VM (playbook install_docker.yml)
+
+Rulăm următoarea comandă:
+
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/install_docker.yml
+
+Ce face acest playbook:
+
+Actualizează lista de pachete;
+
+Instalează docker.io;
+
+Pornește și enablează serviciul Docker.
+
+Deploy aplicație (playbook deploy_platform.yml)
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/deploy_platform.yml
+
+Ce face acest playbook:
+
+Copiază fișierele docker/ pe mașina remote;
+
+Rulează docker-compose up -d pentru a porni serviciile.
+
+Verificare succes deploy
+
+Pe mașina remote:
+
+docker ps
+
+Ar trebui să apară:
+
+CONTAINER ID   IMAGE             STATUS          PORTS
+a1b2c3d4e5f6   system-monitor    Up 10 seconds   ...
+b2c3d4e5f6g7   system-backup     Up 10 seconds   ...
+
+Verifică backup-ul:
+
+ls /home/devops/docker/scripts/backup/
+
+Verifică logurile:
+
+docker logs system-monitor
 
 ## Setup și Rulare in Kubernetes
 - [Adaugati aici cateva detalii despre cum se poate rula in Kubernetes aplicatia]
