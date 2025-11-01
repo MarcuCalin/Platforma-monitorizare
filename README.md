@@ -129,7 +129,6 @@ Această secțiune descrie **toți pașii necesari** pentru a instala, configura
 ### 🖥️ 2. Configurare locală
 
 Clonează proiectul și intră în director:
-
 ```bash
 git clone https://github.com/MarcuCalin/Platforma-monitorizare/
 cd monitoring-platform
@@ -245,10 +244,83 @@ ls /home/devops/docker/scripts/backup/
 Verifică logurile:
 
 docker logs system-monitor
+```
+## ☸️ Setup și rulare în Kubernetes
 
-## Setup și Rulare in Kubernetes
-- [Adaugati aici cateva detalii despre cum se poate rula in Kubernetes aplicatia]
-- [Bonus: Adaugati si o diagrama cu containerele si setupul de Kubernetes] 
+Această aplicație poate fi rulată într-un cluster Kubernetes (de exemplu Minikube) pentru a demonstra orchestrarea și autoscalarea containerelor.
+
+### Pași de rulare
+
+1. **Porniți Minikube**:
+```bash
+ubectl apply -f k8s/namespace.yaml
+kubectl get ns
+Aplicați deployment-ul cu 2 replici:
+
+bash
+Copy code
+kubectl apply -f k8s/deployment.yaml
+kubectl get pods -n monitoring
+Fiecare pod conține 3 containere: monitor, backup și nginx.
+
+nginx expune fișierul de log generat de containerul monitor.
+
+Aplicați HPA (Horizontal Pod Autoscaler):
+
+bash
+Copy code
+kubectl apply -f k8s/hpa.yaml
+kubectl get hpa -n monitoring
+HPA ajustează numărul de replici între 2 și 10 pe baza utilizării CPU și memoriei.
+
+Verificați logurile și starea containerelor:
+
+bash
+Copy code
+kubectl logs <pod_name> -c monitor -n monitoring
+kubectl logs <pod_name> -c backup -n monitoring
+kubectl get pods -n monitoring
+Accesați fișierul de log prin Nginx:
+
+Dacă Minikube rulează pe mașina locală:
+
+bash
+Copy code
+minikube service nginx-service -n monitoring
+Aceasta va deschide în browser fișierul de log partajat între containere.
+
+🖼️ Diagrama arhitecturii în Kubernetes
+sql
+Copy code
+          +--------------------+
+          |      User/Client   |
+          +---------+----------+
+                    |
+                    v
+          +--------------------+
+          |     Nginx Pod      |  <- Expune logurile
+          +---------+----------+
+                    |
+   +----------------+----------------+
+   |                                 |
+   v                                 v
++--------+                       +--------+
+| Monitor|                       | Backup |
+|Container|                       |Container|
++--------+                       +--------+
+
+- HPA (Horizontal Pod Autoscaler) gestionează numărul de replici:
+  minReplicas = 2, maxReplicas = 10
+Note:
+
+Monitorul generează logul de sistem periodic.
+
+Backup-ul verifică modificările și creează copii cu timestamp.
+
+Nginx expune fișierul de log pentru vizualizare externă.
+
+Autoscalarea se face automat pe baza metricilor CPU și memorie.
+```
 
 ## CI/CD și Automatizari
 - [Descriere pipeline-uri Jenkins. Puneti aici cat mai detaliat ce face fiecare pipeline de jenkins cu poze facute la pipeline in Blue Ocean. Detaliati cat puteti de mult procesul de CI/CD folosit.]
