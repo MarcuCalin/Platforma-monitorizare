@@ -266,13 +266,12 @@ Această aplicație poate fi rulată într-un cluster Kubernetes (de exemplu Min
 ### Pași de rulare
 
 1. **Porniți Minikube**:
-```bash
-ubectl apply -f k8s/namespace.yaml
+```
+minikube start
+kubectl apply -f k8s/namespace.yaml
 kubectl get ns
-Aplicați deployment-ul cu 2 replici:
 
-bash
-Copy code
+Aplicați deployment-ul cu 2 replici:
 kubectl apply -f k8s/deployment.yaml
 kubectl get pods -n monitoring
 Fiecare pod conține 3 containere: monitor, backup și nginx.
@@ -281,16 +280,11 @@ nginx expune fișierul de log generat de containerul monitor.
 
 Aplicați HPA (Horizontal Pod Autoscaler):
 
-bash
-Copy code
 kubectl apply -f k8s/hpa.yaml
 kubectl get hpa -n monitoring
 HPA ajustează numărul de replici între 2 și 10 pe baza utilizării CPU și memoriei.
 
 Verificați logurile și starea containerelor:
-
-bash
-Copy code
 kubectl logs <pod_name> -c monitor -n monitoring
 kubectl logs <pod_name> -c backup -n monitoring
 kubectl get pods -n monitoring
@@ -298,14 +292,11 @@ Accesați fișierul de log prin Nginx:
 
 Dacă Minikube rulează pe mașina locală:
 
-bash
-Copy code
 minikube service nginx-service -n monitoring
 Aceasta va deschide în browser fișierul de log partajat între containere.
 
 🖼️ Diagrama arhitecturii în Kubernetes
-sql
-Copy code
+
           +--------------------+
           |      User/Client   |
           +---------+----------+
@@ -341,9 +332,6 @@ Autoscalarea se face automat pe baza metricilor CPU și memorie.
 # 🧩 Platforma Monitorizare — Integrare Jenkins CI/CD
 
 Acest ghid descrie configurarea completă a pipeline-urilor Jenkins pentru proiectul **Platforma Monitorizare**, folosind Jenkinsfile-urile din repository-ul GitHub.
-
----
-
 
 ---
 
