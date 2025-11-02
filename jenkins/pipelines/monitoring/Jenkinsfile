@@ -1,4 +1,3 @@
-# Pipeline Jenkins pentru CI/CD al scriptului Python.
 pipeline {
     agent any
 
