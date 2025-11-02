@@ -1,9 +1,6 @@
 // Pipeline Jenkins pentru CI/CD al scriptului Python de backup
-
 pipeline {
-    agent {
-        docker { image 'python:3.11-slim' }
-    }
+    agent any
 
     environment {
         DOCKERHUB_USER = 'marcu001'
@@ -21,7 +18,10 @@ pipeline {
         stage('Syntax Check') {
             steps {
                 echo 'Verificare sintaxă Python...'
-                sh 'python3 -m py_compile ../../scripts/backup.py'
+                sh '''
+                    apt update && apt install -y python3 python3-pip
+                    python3 -m py_compile ../../scripts/backup.py
+                '''
             }
         }
 
@@ -36,6 +36,7 @@ pipeline {
             steps {
                 echo 'Construim imaginea Docker pentru backup...'
                 sh '''
+                    apt install -y docker.io
                     docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:latest -f ../../docker/Dockerfile.backup .
                 '''
             }
@@ -56,18 +57,14 @@ pipeline {
 
         stage('Cleanup') {
             steps {
-                echo 'Ștergem imaginile temporare...'
+                echo 'Ștergem imaginea locală temporară...'
                 sh 'docker rmi ${DOCKERHUB_USER}/${IMAGE_NAME}:latest || true'
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline finalizat cu succes!'
-        }
-        failure {
-            echo 'Pipeline eșuat!'
-        }
+        success { echo 'Pipeline backup finalizat cu succes!' }
+        failure { echo 'Pipeline backup eșuat!' }
     }
 }
