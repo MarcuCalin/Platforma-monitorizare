@@ -148,26 +148,25 @@ Clonează proiectul și intră în director:
 git clone https://github.com/MarcuCalin/Platforma-monitorizare/
 cd monitoring-platform
 
+# Build imagine backup
+docker build -t system-backup -f docker/Dockerfile.backup .
+
+# Build imagine monitor
+docker build -t system-monitor -f docker/Dockerfile.monitoring .
+
 
 cd docker
 docker-compose up --build -d
 docker ps
 Ar trebui să vezi două containere:
 
-system-monitor
-
-system-backup
+backup
+monitor
 
 Verifică logurile generate:
-
-bash
-Copy code
-docker logs system-monitor
-docker logs system-backup
+docker logs monitor
+docker logs backup
 Verifică existența backup-urilor:
-
-bash
-Copy code
 ls scripts/backup/
 
 Pe masina client citim cheia publica a userului curent
