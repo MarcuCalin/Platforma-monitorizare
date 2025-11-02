@@ -15,24 +15,39 @@ Acest proiect demonstrează o soluție completă DevOps care integrează:
 
 ### 📘 Structura Generală
 ```
-📂 proiect-monitoring
+📂 proiect-monitorizare
 ├── /scripts
-│ ├── system_monitor.sh # Script Shell care monitorizează sistemul și generează system-state.log
-│ └── backup_script.py # Script Python care creează backup pentru loguri
+│   ├── monitoring.sh        # Script Shell care monitorizează sistemul și generează system-state.log
+│   └── backup.py            # Script Python care creează backup pentru loguri
 │
 ├── /docker
-│ ├── Dockerfile.monitoring # Imagine Docker pentru scriptul de monitorizare
-│ ├── Dockerfile.backup # Imagine Docker pentru scriptul de backup
-│ ├── docker-compose.yml # Definește și pornește containerele monitor și backup
+│   ├── Dockerfile.monitoring   # Imagine Docker pentru scriptul de monitorizare
+│   ├── Dockerfile.backup       # Imagine Docker pentru scriptul de backup
+│   ├── docker-compose.yml      # Definește și pornește containerele monitor și backup
+│   └── /data
+│       └── logs                # Folder pentru stocarea fișierelor log
 │
 ├── /kubernetes
-│ ├── namespace.yaml # Creează namespace-ul "monitoring"
-│ ├── deployment.yaml # Deployment cu 2 replici și 3 containere (monitor, backup, nginx)
-│ ├── hpa.yaml # Configurare HPA (Horizontal Pod Autoscaler)
+│   ├── deployment.yaml         # Deployment cu containerele monitor și backup
+│   ├── service.yaml            # Service pentru expunerea aplicației
+│   └── hpa.yaml                # Configurare HPA (Horizontal Pod Autoscaler)
 │
-└── /ansible
-├── install_docker.yml # Instalează Docker pe mașina nouă
-└── run_compose.yml # Rulează docker-compose.yml pe mașina nouă
+├── /ansible
+│   ├── inventory.ini           # Lista de hosturi pentru Ansible
+│   ├── deploy_platform.yml     # Playbook care face deploy la containere
+│   └── install_docker.yml      # Playbook care instalează Docker pe mașini noi
+│
+├── /jenkins
+│   └── /pipelines
+│       ├── monitoring
+│       │   └── Jenkinsfile    # Pipeline pentru scriptul de monitorizare (build, push, deploy)
+│       └── backup
+│           └── Jenkinsfile    # Pipeline pentru scriptul Python de backup (build, push)
+│
+├── README.md
+└── terraform
+    ├── main.tf
+    └── backend.tf
 ```
 ## Directorul `/scripts`
 
