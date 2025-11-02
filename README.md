@@ -323,9 +323,104 @@ Autoscalarea se face automat pe baza metricilor CPU și memorie.
 ```
 
 ## CI/CD și Automatizari
-- [Descriere pipeline-uri Jenkins. Puneti aici cat mai detaliat ce face fiecare pipeline de jenkins cu poze facute la pipeline in Blue Ocean. Detaliati cat puteti de mult procesul de CI/CD folosit.]
-- [Detalii cu restul cerintelor de CI/CD (cum ati creat userul nou ce are access doar la resursele proiectului, cum ati creat un View now pentru proiect, etc)]
-- [Daca ati implementat si punctul E optional atunci detaliati si setupul de minikube.]
+
+# 🧩 Platforma Monitorizare — Integrare Jenkins CI/CD
+
+Acest ghid descrie configurarea completă a pipeline-urilor Jenkins pentru proiectul **Platforma Monitorizare**, folosind Jenkinsfile-urile din repository-ul GitHub.
+
+---
+
+
+---
+
+## 🚀 Scopul pipeline-urilor
+
+| Pipeline | Scop | Etape principale |
+|-----------|------|------------------|
+| **backup** | CI/CD pentru scriptul `backup.py` | Verificare sintaxă → Testare → Build imagine Docker → Push în Docker Hub |
+| **monitoring** | CI/CD pentru scriptul `monitoring.sh` | Build imagine Docker → Push → Deploy cu Ansible |
+
+---
+
+## ⚙️ 1. Crearea joburilor în Jenkins
+
+### 🔹 1.1. `backup-pipeline`
+
+1. În Jenkins → **Dashboard → New Item**
+2. Nume: `backup-pipeline`
+3. Tip: **Pipeline**
+4. Click **OK**
+5. La secțiunea **Pipeline**:
+   - **Definition:** `Pipeline script from SCM`
+   - **SCM:** `Git`
+   - **Repository URL:**  
+     ```
+     https://github.com/MarcuCalin/Platforma-monitorizare.git
+     ```
+   - **Branch:**  
+     ```
+     */main
+     ```
+   - **Script Path:**  
+     ```
+     jenkins/pipelines/backup/Jenkinsfile
+     ```
+6. Click **Save** și **Build Now**
+
+---
+
+### 🔹 1.2. `monitoring-pipeline`
+
+Aceiași pași ca mai sus, doar că:
+
+| Setare | Valoare |
+|--------|----------|
+| **Job Name** | `monitoring-pipeline` |
+| **Script Path** | `jenkins/pipelines/monitoring/Jenkinsfile` |
+
+---
+
+## 🔐 2. Configurare credențiale Docker Hub
+
+1. În Jenkins → **Manage Jenkins → Credentials → Global credentials (unrestricted)**
+2. Click **Add Credentials**
+3. Completează:
+   - **Kind:** Username with password  
+   - **Username:** `marcu001`
+   - **Password:** *(parola contului Docker Hub)*
+   - **ID:** `dockerhub-credentials`
+4. Click **Save**
+
+---
+
+## 🧑‍💻 3. Configurare user limitat pentru proiect
+
+1. **Manage Jenkins → Manage and Assign Roles → Manage Roles**
+2. Creează un rol nou: `project-limited`
+3. Permisiuni minime:
+   - **Overall:** Read
+   - **Job:** Read, Build, Workspace, Discover
+   - **View:** Read
+4. **Assign Roles:**  
+   Atribuie userului `devops_project_user` acest rol.
+
+---
+
+## 🧱 4. Crearea unui “View” pentru proiect
+
+1. Mergi pe Dashboard (pagina principală Jenkins)
+2. Click pe **“+ New View”** sau accesează direct:http://localhost:8080/newView
+3. Completează:
+- **View name:** `Platforma Monitorizare`
+- **Type:** `List View`
+4. Click **OK**
+
+### 🔹 Filtrare joburi
+
+- Bifează “Use regular expression”
+- În câmpul text introdu:.(monitoring|backup). sau selecteaza jobu-rile pe care le vrei vizibile.
+
+
 
 
 ## Terraform și AWS
@@ -339,8 +434,97 @@ Autoscalarea se face automat pe baza metricilor CPU și memorie.
 - [Descrieti cum ati gandit logurile (formatul logurilor, levelul de log)]
 
 
-## Resurse
-- [Listati aici orice link catre o resursa externa il considerti relevant]
-- Exemplu de URL:
-- [Sintaxa Markdown](https://www.markdownguide.org/cheat-sheet/)
-- [Schelet Proiect](https://github.com/amihai/platforma-monitorizare)
+# Resurse utile pentru Jenkins, Docker, Ansible și CI/CD
+
+## 1. Jenkins
+
+- **Documentația oficială Jenkins**  
+  [https://www.jenkins.io/doc/](https://www.jenkins.io/doc/)
+
+- **Pipeline Syntax (Declarative + Scripted)**  
+  [https://www.jenkins.io/doc/book/pipeline/syntax/](https://www.jenkins.io/doc/book/pipeline/syntax/)
+
+- **Managing Jenkins Plugins**  
+  [https://www.jenkins.io/doc/book/managing/plugins/](https://www.jenkins.io/doc/book/managing/plugins/)
+
+- **Using Jenkins with GitHub**  
+  [https://www.jenkins.io/doc/tutorials/build-a-java-app-with-maven/](https://www.jenkins.io/doc/tutorials/build-a-java-app-with-maven/)
+
+---
+
+## 2. Docker
+
+- **Docker oficial**  
+  [https://docs.docker.com/](https://docs.docker.com/)
+
+- **Dockerfile Reference**  
+  [https://docs.docker.com/engine/reference/builder/](https://docs.docker.com/engine/reference/builder/)
+
+- **Docker Hub**  
+  [https://hub.docker.com/](https://hub.docker.com/)
+
+- **Using Docker in Jenkins**  
+  [https://www.jenkins.io/doc/book/pipeline/docker/](https://www.jenkins.io/doc/book/pipeline/docker/)
+
+---
+
+## 3. Ansible
+
+- **Documentația oficială Ansible**  
+  [https://docs.ansible.com/ansible/latest/index.html](https://docs.ansible.com/ansible/latest/index.html)
+
+- **Inventories și Playbooks**  
+  [https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html)  
+  [https://docs.ansible.com/ansible/latest/user_guide/playbooks.html](https://docs.ansible.com/ansible/latest/user_guide/playbooks.html)
+
+- **Ansible Galaxy**  
+  [https://galaxy.ansible.com/](https://galaxy.ansible.com/)
+
+---
+
+## 4. Python
+
+- **Documentația oficială Python 3**  
+  [https://docs.python.org/3/](https://docs.python.org/3/)
+
+- **PEP 8 – Style Guide**  
+  [https://www.python.org/dev/peps/pep-0008/](https://www.python.org/dev/peps/pep-0008/)
+
+- **Virtual Environments**  
+  [https://docs.python.org/3/tutorial/venv.html](https://docs.python.org/3/tutorial/venv.html)
+
+- **PyPI (Python Packages)**  
+  [https://pypi.org/](https://pypi.org/)
+
+---
+
+## 5. CI/CD și bune practici
+
+- **Continuous Integration with Jenkins**  
+  [https://www.jenkins.io/doc/book/pipeline/](https://www.jenkins.io/doc/book/pipeline/)
+
+- **CI/CD Concepts**  
+  [https://www.redhat.com/en/topics/devops/what-is-ci-cd](https://www.redhat.com/en/topics/devops/what-is-ci-cd)
+
+- **Docker + Jenkins + CI/CD example**  
+  [https://www.baeldung.com/ops/jenkins-docker-pipeline](https://www.baeldung.com/ops/jenkins-docker-pipeline)
+
+- **Ansible + CI/CD Pipelines**  
+  [https://www.ansible.com/resources/get-started-ci-cd](https://www.ansible.com/resources/get-started-ci-cd)
+
+---
+
+## 6. Git & GitHub
+
+- **Git Official Documentation**  
+  [https://git-scm.com/doc](https://git-scm.com/doc)
+
+- **GitHub Docs**  
+  [https://docs.github.com/en](https://docs.github.com/en)
+
+- **Git Workflow Cheat Sheet**  
+  [https://www.atlassian.com/git/tutorials/comparing-workflows](https://www.atlassian.com/git/tutorials/comparing-workflows)
+
+---
+
+
