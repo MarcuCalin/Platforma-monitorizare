@@ -494,8 +494,7 @@ Aceiași pași ca mai sus, doar că:
 - [Descrieti cum ati gandit logurile (formatul logurilor, levelul de log)]
 
 
-# Resurse utile pentru Jenkins, Docker, Ansible și CI/CD
-
+# Resurse utile 
 ## 1. Jenkins
 
 - **Documentația oficială Jenkins**  
