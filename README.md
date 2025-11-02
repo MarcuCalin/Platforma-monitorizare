@@ -49,74 +49,129 @@ Acest proiect demonstrează o soluție completă DevOps care integrează:
     ├── main.tf
     └── backend.tf
 ```
-## Directorul `/scripts`
+# Documentație directoare proiect
 
-Acest director conține scripturile folosite pentru colectarea informațiilor despre sistem și realizarea backup-ului automat.
-
- **`monitoring.sh'**
-
-Monitorizează în timp real sistemul (CPU, memorie, disk, procese active, hostname etc.);
-
-Scrie rezultatele în fișierul system-state.log;
-
-Este rulat periodic printr-un container dedicat.
-
-Exemplu rulare manuală:
-
-bash scripts/monitoring.sh
- 
- **`backup.py '**
-
-Verifică existența fișierului system-state.log;
-
-Creează un backup într-un fișier cu timestamp;
-
-Este declanșat automat din containerul backup.
-
-Rulare manuală:
-
-python3 scripts/backup.py
-
-- **`system-state.log`**  
-  Fișierul generat de `monitoring.sh` care conține informații detaliate despre starea sistemului.
-
-**Rol general:**  
-Directorul `scripts` centralizează logica aplicației, oferind fișiere independente care pot fi testate local sau containerizate ulterior.
+Această documentație descrie structura și funcționalitatea principalelor directoare din proiectul de monitorizare și backup.
 
 ---
 
-## Directorul `/docker`
+## 📂 scripts
 
-Directorul **`docker`** conține fișierele necesare pentru containerizarea scripturilor și orchestrarea lor cu Docker Compose.
+Directorul `/scripts` conține scripturile care rulează efectiv funcționalitatea platformei.
 
-- **`Dockerfile.monitoring`**  
-  Definește imaginea Docker pentru scriptul de monitorizare Bash:
-  - Pornește de la Debian Bookworm.
-  - Instalează pachetele necesare (`sysstat`, `procps`) pentru colectarea informațiilor de sistem.
-  - Copiază scriptul `monitoring.sh` din `/scripts` în container și îl face executabil.
-  - CMD-ul pornește automat scriptul la rularea containerului.
+### Conținut:
 
-- **`Dockerfile.backup`**  
-  Definește imaginea Docker pentru scriptul Python de backup:
-  - Pornește de la `python:3.11-slim`.
-  - Copiază `backup.py` din `/scripts` în container.
-  - CMD-ul pornește scriptul automat la rularea containerului.
+- `monitoring.sh`  
+  - Script Shell care monitorizează resursele sistemului (CPU, memorie, disk, procese) și generează fișiere `system-state.log`.
+  
+- `backup.py`  
+  - Script Python care creează backup pentru fișierele de log generate de monitorizare.
+  - Poate salva fișierele într-un folder dedicat și poate fi rulat periodic.
 
-- **`docker-compose.yml`**  
-  Orchestrarea ambelor containere, configurând:
-  - Serviciile `monitor` și `backup`.
-  - Volume pentru persistarea fișierului `system-state.log` și a backup-urilor.
-  - Variabile de mediu pentru intervale și directoare.
-  - Rețea implicită pentru comunicarea între containere (backup poate accesa fișierul generat de monitor).
+### Funcționalitate:
 
-**Legătura dintre Dockerfile-uri și scripturi:**  
-Fiecare Dockerfile pornește un script din `/scripts` și configurează mediul necesar pentru ca acesta să funcționeze independent în container. Docker Compose conectează containerele între ele prin volume, astfel încât:
-- `monitor` scrie log-ul într-un volum partajat.
-- `backup` citește log-ul și generează backup-uri automat.
+- Automatizează colectarea datelor despre sistem.
+- Creează backup pentru datele monitorizate.
+- Servesc ca bază pentru containerele Docker și pipeline-urile CI/CD.
 
-- `/ansible`: [Descriere rolurilor playbook-urilor și inventory]
-- `/jenkins`: [Descrierea rolului acestui director si a subdirectoarelor. Unde sunt folosite fisierele din acest subdirector.]
-- `/terraform`: [Descriere rol fiecare fisier Terraform folosit]
+---
+
+## 📂 docker
+
+Directorul `/docker` conține fișierele necesare pentru **crearea imaginilor Docker** și rularea containerelor.
+
+### Conținut:
+
+- `Dockerfile.monitoring`  
+  - Imagine pentru scriptul de monitorizare.
+  - Bază: Debian sau alt OS ușor.
+  - Instalează utilitare necesare (`sysstat`, `procps`), copiază scriptul `monitoring.sh` și definește CMD pentru rulare.
+
+- `Dockerfile.backup`  
+  - Imagine pentru scriptul de backup.
+  - Bază: Python slim.
+  - Copiază scriptul `backup.py` și folderul de loguri, definește CMD pentru rulare.
+
+- `docker-compose.yml`  
+  - Definește și pornește ambele containere (`monitor` și `backup`) cu volume și rețea comună.
+  
+- `/data/logs`  
+  - Folder unde sunt stocate fișierele log persistente generate de containere.
+
+### Funcționalitate:
+
+- Containerizează aplicația pentru portabilitate și consistență între medii.
+- Permite rularea izolat a scripturilor fără a afecta sistemul gazdă.
+- Docker Compose simplifică orchestrarea și comunicarea între containere.
+
+---
+
+## 📂 kubernetes
+
+Directorul `/kubernetes` conține fișiere pentru rularea aplicației în **cluster Kubernetes**.
+
+### Conținut:
+
+- `deployment.yaml`  
+  - Definește Deployment pentru containerele de monitorizare și backup.
+  
+- `service.yaml`  
+  - Configurează accesul la aplicație și comunicația între containere.
+  
+- `hpa.yaml`  
+  - Configurează Horizontal Pod Autoscaler pentru scalare automată pe baza utilizării resurselor.
+
+### Funcționalitate:
+
+- Orchestrarea și scalarea containerelor.
+- Gestionarea comunicației între containere.
+- Permite deploy repetabil și replicabil pe diferite medii.
+
+---
+
+## 📂 ansible
+
+Directorul `/ansible` conține playbook-uri și fișiere de inventar pentru **automatizarea setup-ului serverelor**.
+
+### Conținut:
+
+- `inventory.ini`  
+  - Lista de hosturi/servere pentru care se rulează playbook-urile.
+  
+- `install_docker.yml`  
+  - Playbook care instalează Docker pe mașinile noi.
+
+- `deploy_platform.yml`  
+  - Playbook care rulează `docker-compose.yml` pe servere, configurând containerele monitorizare și backup.
+
+### Funcționalitate:
+
+- Automatizează configurarea mediului și deploy-ul aplicației.
+- Reduce erorile manuale la instalarea Docker și rularea containerelor.
+- Permite deploy rapid și sigur pe medii noi.
+
+---
+
+## 📂 jenkins
+
+Directorul `/jenkins/pipelines` conține **pipeline-urile CI/CD** pentru proiect.
+
+### Conținut:
+
+- `backup/Jenkinsfile`  
+  - Pipeline pentru scriptul Python de backup.
+  - Etape: verificare sintaxă Python, teste unitare, build Docker, push pe Docker Hub, cleanup.
+
+- `monitoring/Jenkinsfile`  
+  - Pipeline pentru scriptul Shell de monitorizare.
+  - Etape: build Docker, push pe Docker Hub, eventual deploy.
+
+### Funcționalitate:
+
+- Automatizează procesul CI/CD pentru backup și monitorizare.
+- Asigură build și deploy repetabil.
+- Integrare cu Docker Hub pentru distribuirea imaginilor.
+
 
 ##  Setup și Rulare
 
@@ -144,7 +199,7 @@ Această secțiune descrie **toți pașii necesari** pentru a instala, configura
 ### 🖥️ 2. Configurare locală
 
 Clonează proiectul și intră în director:
-```bash
+```
 git clone https://github.com/MarcuCalin/Platforma-monitorizare/
 cd monitoring-platform
 
@@ -168,7 +223,10 @@ docker logs monitor
 docker logs backup
 Verifică existența backup-urilor:
 ls scripts/backup/
+```
 
+## 🧩 Setup și rulare în Ansible
+```
 Pe masina client citim cheia publica a userului curent
 cat ~/.ssh/id_rsa.pub
 
