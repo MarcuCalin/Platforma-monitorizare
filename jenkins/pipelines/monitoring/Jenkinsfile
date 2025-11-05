@@ -19,8 +19,7 @@ pipeline {
             steps {
                 echo 'Construim imaginea Docker pentru sistemul de monitorizare...'
                 sh '''
-                    apt update && apt install -y docker.io
-                    docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:latest -f ../../docker/Dockerfile.monitoring .
+                    docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:latest -f docker/Dockerfile.monitoring .
                 '''
             }
         }
@@ -43,7 +42,7 @@ pipeline {
                 echo 'Deploy cu Ansible...'
                 sh '''
                     apt install -y ansible openssh-client
-                    ansible-playbook ansible/playbooks/deploy_platform.yml -i ../../ansible/inventory.ini
+                    ansible-playbook ansible/playbooks/deploy_platform.yml -i ansible/inventory.ini
                 '''
             }
         }
