@@ -36,17 +36,7 @@ pipeline {
                 }
             }
         }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploy cu Ansible...'
-                sh '''
-                    apt install -y ansible openssh-client
-                    ansible-playbook ansible/playbooks/deploy_platform.yml -i ansible/inventory.ini
-                '''
-            }
-        }
-
+        
         stage('Cleanup') {
             steps {
                 echo 'Ștergem imaginea locală temporară...'
