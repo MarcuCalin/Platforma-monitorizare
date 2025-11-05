@@ -36,8 +36,7 @@ pipeline {
             steps {
                 echo 'Construim imaginea Docker pentru backup...'
                 sh '''
-                    apt install -y docker.io
-                    docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:latest -f ../../docker/Dockerfile.backup .
+                docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:latest -f docker/Dockerfile.backup .
                 '''
             }
         }
