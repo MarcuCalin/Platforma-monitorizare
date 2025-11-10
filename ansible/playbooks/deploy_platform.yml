@@ -15,6 +15,13 @@
         owner: ansible_user
         mode: '0644'
 
+    - name: Copy docker folder
+      copy: 
+        src: ../../docker/
+        dest: /home/ansible_user/docker/
+        owner : ansible_user
+        mode: '0755'
+
     - name: Run docker-compose up
       command: docker-compose -f /home/ansible_user/docker-compose.yml up -d
       args:
