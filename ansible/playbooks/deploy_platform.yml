@@ -8,22 +8,14 @@
         name: docker-compose
         state: present
 
-    - name: Copy docker-compose.yml
-      copy:
-        src: ../../docker/docker-compose.yml
-        dest: /home/ansible_user/docker-compose.yml
-        owner: ansible_user
-        mode: '0644'
-
-    - name: Copy docker folder
-      copy: 
-        src: ../../docker/
-        dest: /home/ansible_user/docker/
-        owner : ansible_user
-        mode: '0755'
+    - name: Copy project
+      ansible.posix.synchronize:
+        src: "{{ playbook_dir }}/../.."
+        dest: /home/ansible_user/platforma-monitorizare/
+        recursive: yes
 
     - name: Run docker-compose up
-      command: docker-compose -f /home/ansible_user/docker-compose.yml up -d
+      command: docker-compose up -d
       args:
-        chdir: /home/ansible_user
+        chdir: /home/ansible_user/platforma-monitorizare/docker
 
